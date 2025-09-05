@@ -1,0 +1,287 @@
+// Hero Section JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initHeroAnimations();
+    initGlitchEffect();
+    initTypingEffect();
+});
+
+// Initialize hero animations
+function initHeroAnimations() {
+    const heroText = document.querySelector('.hero-text');
+    const heroImage = document.querySelector('.hero-image');
+    
+    // Add initial styles for animation
+    if (heroText) {
+        heroText.style.opacity = '0';
+        heroText.style.transform = 'translateX(-50px)';
+        heroText.style.transition = 'all 1s ease';
+    }
+    
+    if (heroImage) {
+        heroImage.style.opacity = '0';
+        heroImage.style.transform = 'translateX(50px)';
+        heroImage.style.transition = 'all 1s ease 0.3s';
+    }
+    
+    // Trigger animations on load
+    setTimeout(() => {
+        if (heroText) {
+            heroText.style.opacity = '1';
+            heroText.style.transform = 'translateX(0)';
+        }
+    }, 500);
+    
+    setTimeout(() => {
+        if (heroImage) {
+            heroImage.style.opacity = '1';
+            heroImage.style.transform = 'translateX(0)';
+        }
+    }, 800);
+}
+
+// Enhanced glitch effect
+function initGlitchEffect() {
+    const glitchElement = document.querySelector('.glitch');
+    
+    if (!glitchElement) return;
+    
+    // Random glitch trigger
+    function triggerGlitch() {
+        glitchElement.style.animation = 'none';
+        
+        setTimeout(() => {
+            glitchElement.style.animation = '';
+        }, 50);
+        
+        // Schedule next glitch
+        setTimeout(triggerGlitch, Math.random() * 10000 + 5000);
+    }
+    
+    // Start glitch effect
+    setTimeout(triggerGlitch, 3000);
+}
+
+// Typing effect for subtitle
+function initTypingEffect() {
+    const subtitle = document.querySelector('.hero-subtitle');
+    
+    if (!subtitle) return;
+    
+    const originalText = subtitle.textContent;
+    const typingSpeed = 100; // milliseconds per character
+    const pauseTime = 2000; // pause before starting
+    
+    // Clear text initially
+    subtitle.textContent = '';
+    subtitle.style.borderRight = '2px solid var(--primary-cyan)';
+    
+    setTimeout(() => {
+        typeText(subtitle, originalText, typingSpeed);
+    }, pauseTime);
+}
+
+// Type text character by character
+function typeText(element, text, speed) {
+    let index = 0;
+    
+    function typeCharacter() {
+        if (index < text.length) {
+            element.textContent += text.charAt(index);
+            index++;
+            setTimeout(typeCharacter, speed);
+        } else {
+            // Remove cursor after typing is complete
+            setTimeout(() => {
+                element.style.borderRight = 'none';
+            }, 1000);
+        }
+    }
+    
+    typeCharacter();
+}
+
+// Parallax effect for hero background
+function initHeroParallax() {
+    const heroSection = document.querySelector('.hero-section');
+    
+    if (!heroSection) return;
+    
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const parallaxSpeed = 0.5;
+        
+        heroSection.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+    });
+}
+
+// Initialize parallax effect
+initHeroParallax();
+
+// Floating animation for profile image
+function initImageFloating() {
+    const profileImg = document.querySelector('.profile-img');
+    
+    if (!profileImg) return;
+    
+    let floatDirection = 1;
+    let currentFloat = 0;
+    
+    function animateFloat() {
+        currentFloat += floatDirection * 0.5;
+        
+        if (currentFloat >= 10) floatDirection = -1;
+        if (currentFloat <= -10) floatDirection = 1;
+        
+        profileImg.style.transform = `translateY(${currentFloat}px)`;
+        
+        requestAnimationFrame(animateFloat);
+    }
+    
+    animateFloat();
+}
+
+// Initialize image floating
+initImageFloating();
+
+// Hero button interactions
+function initHeroButtonEffects() {
+    const heroBtn = document.querySelector('.hero-btn');
+    
+    if (!heroBtn) return;
+    
+    // Add ripple effect on click
+    heroBtn.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const ripple = document.createElement('div');
+        
+        ripple.style.cssText = `
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            left: ${e.clientX - rect.left}px;
+            top: ${e.clientY - rect.top}px;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            margin-top: -10px;
+            pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+    
+    // Add ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize button effects
+initHeroButtonEffects();
+
+// Cursor trail effect (optional)
+function initCursorTrail() {
+    const heroSection = document.querySelector('.hero-section');
+    
+    if (!heroSection) return;
+    
+    const trail = [];
+    const maxTrailLength = 20;
+    
+    heroSection.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Add new point to trail
+        trail.push({ x, y, life: 1 });
+        
+        // Remove old points
+        if (trail.length > maxTrailLength) {
+            trail.shift();
+        }
+        
+        // Update trail display
+        updateCursorTrail();
+    });
+    
+    function updateCursorTrail() {
+        // Remove existing trail elements
+        const existingTrails = heroSection.querySelectorAll('.cursor-trail');
+        existingTrails.forEach(el => el.remove());
+        
+        // Create new trail elements
+        trail.forEach((point, index) => {
+            const trailElement = document.createElement('div');
+            trailElement.className = 'cursor-trail';
+            trailElement.style.cssText = `
+                position: absolute;
+                width: 4px;
+                height: 4px;
+                background: var(--primary-cyan);
+                border-radius: 50%;
+                pointer-events: none;
+                left: ${point.x}px;
+                top: ${point.y}px;
+                opacity: ${point.life * (index / trail.length)};
+                box-shadow: 0 0 10px var(--primary-cyan);
+                z-index: 1;
+            `;
+            
+            heroSection.appendChild(trailElement);
+            
+            // Fade out the point
+            point.life -= 0.05;
+        });
+        
+        // Remove dead points
+        for (let i = trail.length - 1; i >= 0; i--) {
+            if (trail[i].life <= 0) {
+                trail.splice(i, 1);
+            }
+        }
+    }
+}
+
+// Initialize cursor trail (optional - can be enabled/disabled)
+// initCursorTrail();
+
+// Responsive text sizing
+function initResponsiveText() {
+    const heroTitle = document.querySelector('.hero-title');
+    
+    if (!heroTitle) return;
+    
+    function adjustTextSize() {
+        const screenWidth = window.innerWidth;
+        
+        if (screenWidth < 480) {
+            heroTitle.style.fontSize = '2.5rem';
+        } else if (screenWidth < 768) {
+            heroTitle.style.fontSize = '3rem';
+        } else if (screenWidth < 1024) {
+            heroTitle.style.fontSize = '3.5rem';
+        } else {
+            heroTitle.style.fontSize = '4rem';
+        }
+    }
+    
+    window.addEventListener('resize', adjustTextSize);
+    adjustTextSize();
+}
+
+// Initialize responsive text
+initResponsiveText();
