@@ -1,474 +1,174 @@
-// Portfolio Section JavaScript
+// Portfolio Section JavaScript - No scroll effects
 document.addEventListener('DOMContentLoaded', function() {
-    initPortfolioAnimations();
     initPortfolioModal();
-    initPortfolioFilters();
-    initPortfolioHoverEffects();
+    initPortfolioHover();
+    initPortfolioFilter();
 });
 
-// Initialize portfolio section animations
-function initPortfolioAnimations() {
-    const portfolioSection = document.querySelector('.portfolio-section');
-    
-    if (!portfolioSection) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animatePortfolioItems();
-                observer.unobserve(entry.target); // Run animation only once
-            }
-        });
-    }, {
-        threshold: 0.2
-    });
-    
-    observer.observe(portfolioSection);
-}
-
-// Animate portfolio items
-function animatePortfolioItems() {
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    
-    portfolioItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.classList.add('animate');
-        }, index * 150); // Stagger animation
-    });
-}
-
-// Initialize portfolio modal
+// Portfolio modal functionality
 function initPortfolioModal() {
     const modal = document.getElementById('portfolioModal');
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
     const closeBtn = document.querySelector('.close');
     
-    if (!modal || !closeBtn) return;
-    
-    // Portfolio data
+    // Portfolio data (you can expand this)
     const portfolioData = {
         'E-commerce Platform': {
             image: 'img/project1.jpg',
-            title: 'E-commerce Platform',
-            description: 'A comprehensive e-commerce solution built with ASP.NET Core, featuring user authentication, product management, shopping cart functionality, and secure payment processing. The platform includes an admin dashboard for inventory management and order tracking.',
-            technologies: ['ASP.NET Core', 'SQL Server', 'JavaScript', 'Bootstrap', 'PayPal API'],
-            demoUrl: '#',
-            githubUrl: '#'
+            description: 'A comprehensive e-commerce solution built with ASP.NET Core, featuring user authentication, product management, shopping cart, and payment processing.',
+            tech: ['ASP.NET Core', 'SQL Server', 'JavaScript', 'Bootstrap', 'Entity Framework']
         },
         'Task Management System': {
             image: 'img/project2.jpg',
-            title: 'Task Management System',
-            description: 'A collaborative project management tool with real-time features using SignalR. Users can create projects, assign tasks, track progress, and communicate in real-time. Features include file sharing, notifications, and detailed reporting.',
-            technologies: ['C#', 'SignalR', 'Bootstrap', 'SQLite', 'Chart.js'],
-            demoUrl: '#',
-            githubUrl: '#'
+            description: 'Real-time task management application with team collaboration features, built using SignalR for live updates.',
+            tech: ['C#', 'SignalR', 'Bootstrap', 'SQL Server', 'jQuery']
         },
         'Banking System': {
             image: 'img/project3.jpg',
-            title: 'Banking System',
-            description: 'A secure banking application with advanced security features including two-factor authentication, encrypted transactions, and fraud detection. The system supports multiple account types, loan management, and detailed transaction history.',
-            technologies: ['ASP.NET', 'Entity Framework', 'Security', 'JWT', 'SQL Server'],
-            demoUrl: '#',
-            githubUrl: '#'
+            description: 'Secure banking application with advanced security measures, transaction processing, and account management.',
+            tech: ['ASP.NET', 'Entity Framework', 'Security', 'SQL Server', 'C#']
         },
         'Portfolio Website': {
             image: 'img/project4.jpg',
-            title: 'Portfolio Website',
-            description: 'A responsive personal portfolio website with modern design principles. Features smooth animations, dark theme, contact form integration, and optimized performance. Built with vanilla JavaScript for fast loading times.',
-            technologies: ['HTML/CSS', 'JavaScript', 'Responsive', 'Font Awesome', 'Google Fonts'],
-            demoUrl: '#',
-            githubUrl: '#'
+            description: 'Modern responsive portfolio website showcasing web development skills with clean design and smooth interactions.',
+            tech: ['HTML/CSS', 'JavaScript', 'Responsive', 'CSS Grid', 'Flexbox']
         }
     };
     
-    // Add click event to portfolio items
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    // Open modal when portfolio item is clicked
     portfolioItems.forEach(item => {
         item.addEventListener('click', function() {
             const title = this.querySelector('h3').textContent;
             const data = portfolioData[title];
             
             if (data) {
-                showPortfolioModal(data);
+                document.getElementById('modalImage').src = data.image;
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalDescription').textContent = data.description;
+                
+                const techContainer = document.getElementById('modalTech');
+                techContainer.innerHTML = '';
+                data.tech.forEach(tech => {
+                    const span = document.createElement('span');
+                    span.textContent = tech;
+                    techContainer.appendChild(span);
+                });
+                
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
             }
         });
-        
-        // Add pointer cursor
-        item.style.cursor = 'pointer';
     });
     
-    // Close modal events
-    closeBtn.addEventListener('click', function() {
-        hidePortfolioModal();
-    });
+    // Close modal
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
     
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+    
+    // Close modal when clicking outside
     modal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            hidePortfolioModal();
+        if (e.target === modal) {
+            closeModal();
         }
     });
     
-    // Keyboard navigation
+    // Close modal with escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal.style.display === 'block') {
-            hidePortfolioModal();
+            closeModal();
         }
     });
 }
 
-// Show portfolio modal
-function showPortfolioModal(data) {
-    const modal = document.getElementById('portfolioModal');
-    const modalImage = document.getElementById('modalImage');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDescription = document.getElementById('modalDescription');
-    const modalTech = document.getElementById('modalTech');
-    const modalDemo = document.getElementById('modalDemo');
-    const modalGithub = document.getElementById('modalGithub');
-    
-    // Populate modal content
-    modalImage.src = data.image;
-    modalImage.alt = data.title;
-    modalTitle.textContent = data.title;
-    modalDescription.textContent = data.description;
-    
-    // Clear and populate technologies
-    modalTech.innerHTML = '';
-    data.technologies.forEach(tech => {
-        const techSpan = document.createElement('span');
-        techSpan.textContent = tech;
-        modalTech.appendChild(techSpan);
-    });
-    
-    // Set links
-    modalDemo.href = data.demoUrl;
-    modalGithub.href = data.githubUrl;
-    
-    // Show modal
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    
-    // Animate modal appearance
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.style.transform = 'scale(0.8)';
-    modalContent.style.opacity = '0';
-    
-    setTimeout(() => {
-        modalContent.style.transform = 'scale(1)';
-        modalContent.style.opacity = '1';
-    }, 50);
-}
-
-// Hide portfolio modal
-function hidePortfolioModal() {
-    const modal = document.getElementById('portfolioModal');
-    const modalContent = modal.querySelector('.modal-content');
-    
-    // Animate modal disappearance
-    modalContent.style.transform = 'scale(0.8)';
-    modalContent.style.opacity = '0';
-    
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Restore scrolling
-    }, 300);
-}
-
-// Initialize portfolio filters
-function initPortfolioFilters() {
-    const portfolioSection = document.querySelector('.portfolio-section');
-    
-    if (!portfolioSection) return;
-    
-    // Create filter buttons
-    const filterContainer = document.createElement('div');
-    filterContainer.className = 'portfolio-filters';
-    filterContainer.style.cssText = `
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-bottom: 3rem;
-        flex-wrap: wrap;
-    `;
-    
-    const filters = ['All', 'Web Apps', 'Management', 'Security', 'Frontend'];
-    
-    filters.forEach(filter => {
-        const button = document.createElement('button');
-        button.textContent = filter;
-        button.className = filter === 'All' ? 'filter-btn active' : 'filter-btn';
-        button.style.cssText = `
-            background: var(--accent-bg);
-            color: var(--text-secondary);
-            border: 2px solid var(--border-color);
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        `;
-        
-        button.addEventListener('click', function() {
-            filterPortfolioItems(filter);
-            updateActiveFilter(this);
-        });
-        
-        filterContainer.appendChild(button);
-    });
-    
-    // Insert filter container before portfolio grid
-    const portfolioGrid = portfolioSection.querySelector('.portfolio-grid');
-    portfolioSection.insertBefore(filterContainer, portfolioGrid);
-    
-    // Add filter styles
-    addFilterStyles();
-}
-
-// Filter portfolio items
-function filterPortfolioItems(filter) {
+// Basic portfolio hover effects
+function initPortfolioHover() {
     const portfolioItems = document.querySelectorAll('.portfolio-item');
     
     portfolioItems.forEach(item => {
-        const title = item.querySelector('h3').textContent;
-        let shouldShow = filter === 'All';
-        
-        // Define filter criteria
-        switch (filter) {
-            case 'Web Apps':
-                shouldShow = title.includes('E-commerce') || title.includes('Banking');
-                break;
-            case 'Management':
-                shouldShow = title.includes('Task Management');
-                break;
-            case 'Security':
-                shouldShow = title.includes('Banking');
-                break;
-            case 'Frontend':
-                shouldShow = title.includes('Portfolio');
-                break;
-        }
-        
-        if (shouldShow) {
-            item.style.display = 'block';
-            item.style.animation = 'fadeInUp 0.5s ease';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-// Update active filter button
-function updateActiveFilter(activeButton) {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    
-    filterButtons.forEach(btn => {
-        btn.classList.remove('active');
-        btn.style.background = 'var(--accent-bg)';
-        btn.style.color = 'var(--text-secondary)';
-        btn.style.borderColor = 'var(--border-color)';
-    });
-    
-    activeButton.classList.add('active');
-    activeButton.style.background = 'linear-gradient(45deg, var(--primary-cyan), var(--neon-blue))';
-    activeButton.style.color = 'var(--primary-bg)';
-    activeButton.style.borderColor = 'var(--primary-cyan)';
-}
-
-// Add filter button styles
-function addFilterStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .filter-btn:hover {
-            background: var(--hover-bg) !important;
-            color: var(--primary-cyan) !important;
-            border-color: var(--primary-cyan) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
-        }
-        
-        .filter-btn.active:hover {
-            background: linear-gradient(45deg, var(--primary-cyan), var(--neon-blue)) !important;
-            color: var(--primary-bg) !important;
-        }
-        
-        @media (max-width: 768px) {
-            .portfolio-filters {
-                gap: 0.5rem !important;
-            }
-            
-            .filter-btn {
-                padding: 0.6rem 1rem !important;
-                font-size: 0.9rem !important;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Initialize portfolio hover effects
-function initPortfolioHoverEffects() {
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    
-    portfolioItems.forEach(item => {
-        const image = item.querySelector('.portfolio-image img');
-        const overlay = item.querySelector('.portfolio-overlay');
-        const links = item.querySelectorAll('.portfolio-link');
-        
-        // Enhanced hover effects
         item.addEventListener('mouseenter', function() {
-            if (image) {
-                image.style.transform = 'scale(1.1) rotate(2deg)';
-                image.style.filter = 'brightness(1.1) contrast(1.1)';
-            }
-            
-            // Animate links
-            links.forEach((link, index) => {
-                setTimeout(() => {
-                    link.style.transform = 'scale(1.1) rotate(360deg)';
-                }, index * 100);
-            });
+            this.style.transform = 'translateY(-10px)';
         });
         
         item.addEventListener('mouseleave', function() {
-            if (image) {
-                image.style.transform = 'scale(1.1) rotate(0deg)';
-                image.style.filter = 'brightness(0.8)';
-            }
+            this.style.transform = 'translateY(0)';
+        });
+    });
+}
+
+// Portfolio filter functionality (optional)
+function initPortfolioFilter() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
             
-            // Reset links
-            links.forEach(link => {
-                link.style.transform = 'scale(1) rotate(0deg)';
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            
+            portfolioItems.forEach(item => {
+                if (filter === 'all' || item.classList.contains(filter)) {
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                } else {
+                    item.style.display = 'none';
+                    item.style.opacity = '0';
+                }
             });
         });
+    });
+}
+
+// Portfolio lazy loading (basic implementation)
+function initPortfolioLazyLoading() {
+    const portfolioImages = document.querySelectorAll('.portfolio-image img');
+    
+    portfolioImages.forEach(img => {
+        img.addEventListener('load', function() {
+            this.style.opacity = '1';
+        });
         
-        // Click ripple effect
-        item.addEventListener('click', function(e) {
-            createRippleEffect(this, e);
+        // Fallback if image is already loaded
+        if (img.complete) {
+            img.style.opacity = '1';
+        }
+    });
+}
+
+// Initialize lazy loading
+initPortfolioLazyLoading();
+
+// Portfolio item click handling for links
+function initPortfolioLinks() {
+    const portfolioLinks = document.querySelectorAll('.portfolio-link');
+    
+    portfolioLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent modal from opening
+            
+            // You can add specific functionality here
+            const isEyeIcon = this.querySelector('.fa-eye');
+            const isGithubIcon = this.querySelector('.fa-github');
+            
+            if (isEyeIcon) {
+                // Handle demo link
+                console.log('Opening demo...');
+            } else if (isGithubIcon) {
+                // Handle GitHub link
+                console.log('Opening GitHub...');
+            }
         });
     });
 }
 
-// Create ripple effect on click
-function createRippleEffect(element, event) {
-    const rect = element.getBoundingClientRect();
-    const ripple = document.createElement('div');
-    
-    ripple.style.cssText = `
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(0, 255, 255, 0.6);
-        transform: scale(0);
-        animation: ripple 0.6s linear;
-        left: ${event.clientX - rect.left}px;
-        top: ${event.clientY - rect.top}px;
-        width: 20px;
-        height: 20px;
-        margin-left: -10px;
-        margin-top: -10px;
-        pointer-events: none;
-        z-index: 10;
-    `;
-    
-    element.style.position = 'relative';
-    element.appendChild(ripple);
-    
-    setTimeout(() => {
-        ripple.remove();
-    }, 600);
-}
-
-// Portfolio search functionality
-function initPortfolioSearch() {
-    const portfolioSection = document.querySelector('.portfolio-section');
-    const container = portfolioSection.querySelector('.container');
-    
-    // Create search input
-    const searchContainer = document.createElement('div');
-    searchContainer.style.cssText = `
-        display: flex;
-        justify-content: center;
-        margin-bottom: 2rem;
-    `;
-    
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.placeholder = 'Search projects...';
-    searchInput.style.cssText = `
-        background: var(--accent-bg);
-        border: 2px solid var(--border-color);
-        border-radius: 25px;
-        padding: 1rem 1.5rem;
-        color: var(--text-primary);
-        font-size: 1rem;
-        width: 300px;
-        transition: all 0.3s ease;
-    `;
-    
-    searchInput.addEventListener('focus', function() {
-        this.style.borderColor = 'var(--primary-cyan)';
-        this.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.2)';
-    });
-    
-    searchInput.addEventListener('blur', function() {
-        this.style.borderColor = 'var(--border-color)';
-        this.style.boxShadow = 'none';
-    });
-    
-    searchInput.addEventListener('input', function() {
-        searchPortfolioItems(this.value);
-    });
-    
-    searchContainer.appendChild(searchInput);
-    container.insertBefore(searchContainer, container.querySelector('.portfolio-grid'));
-}
-
-// Search portfolio items
-function searchPortfolioItems(query) {
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    const searchTerm = query.toLowerCase();
-    
-    portfolioItems.forEach(item => {
-        const title = item.querySelector('h3').textContent.toLowerCase();
-        const description = item.querySelector('p').textContent.toLowerCase();
-        const technologies = Array.from(item.querySelectorAll('.portfolio-tech span'))
-            .map(span => span.textContent.toLowerCase()).join(' ');
-        
-        const matches = title.includes(searchTerm) || 
-                       description.includes(searchTerm) || 
-                       technologies.includes(searchTerm);
-        
-        if (matches || searchTerm === '') {
-            item.style.display = 'block';
-            item.style.animation = 'fadeInUp 0.3s ease';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-// Initialize portfolio search
-initPortfolioSearch();
-
-// Responsive portfolio layout
-function initResponsivePortfolio() {
-    const portfolioGrid = document.querySelector('.portfolio-grid');
-    
-    if (!portfolioGrid) return;
-    
-    function adjustPortfolioLayout() {
-        const screenWidth = window.innerWidth;
-        
-        if (screenWidth < 768) {
-            portfolioGrid.style.gridTemplateColumns = '1fr';
-        } else if (screenWidth < 1024) {
-            portfolioGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-        } else {
-            portfolioGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
-        }
-    }
-    
-    window.addEventListener('resize', adjustPortfolioLayout);
-    adjustPortfolioLayout();
-}
-
-// Initialize responsive portfolio
-initResponsivePortfolio();
+// Initialize portfolio links
+initPortfolioLinks();

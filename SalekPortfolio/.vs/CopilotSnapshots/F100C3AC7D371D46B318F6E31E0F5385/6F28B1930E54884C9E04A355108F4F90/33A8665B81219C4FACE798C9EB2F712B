@@ -1,0 +1,253 @@
+﻿// Contact Section JavaScript - No scroll effects
+document.addEventListener('DOMContentLoaded', function() {
+    initContactForm();
+    initContactInteractions();
+});
+
+// Contact form functionality
+function initContactForm() {
+    const contactForm = document.querySelector('.contact-form');
+    
+    if (!contactForm) return;
+    
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form data
+        const formData = new FormData(this);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const subject = formData.get('subject');
+        const message = formData.get('message');
+        
+        // Basic validation
+        if (!name || !email || !subject || !message) {
+            showFormMessage('Please fill in all fields.', 'error');
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            showFormMessage('Please enter a valid email address.', 'error');
+            return;
+        }
+        
+        // Simulate form submission
+        submitForm(formData);
+    });
+}
+
+// Form submission simulation
+function submitForm(formData) {
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    submitBtn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Reset button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        // Show success message
+        showFormMessage('Thank you! Your message has been sent successfully.', 'success');
+        
+        // Reset form
+        document.querySelector('.contact-form').reset();
+        
+    }, 2000);
+}
+
+// Show form messages
+function showFormMessage(message, type) {
+    // Remove existing message
+    const existingMessage = document.querySelector('.form-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Create new message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `form-message ${type}`;
+    messageDiv.textContent = message;
+    
+    // Insert message at the top of the form
+    const form = document.querySelector('.contact-form');
+    form.insertBefore(messageDiv, form.firstChild);
+    
+    // Show message with animation
+    setTimeout(() => {
+        messageDiv.classList.add('show');
+    }, 100);
+    
+    // Remove message after 5 seconds
+    setTimeout(() => {
+        messageDiv.classList.remove('show');
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
+        }, 300);
+    }, 5000);
+}
+
+// Email validation
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Contact interactions
+function initContactInteractions() {
+    const contactItems = document.querySelectorAll('.contact-item');
+    const formInputs = document.querySelectorAll('.form-group input, .form-group textarea');
+    
+    // Contact item hover effects
+    contactItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(10px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+        
+        // Click to copy functionality
+        item.addEventListener('click', function() {
+            const text = this.querySelector('p').textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showTemporaryMessage(this, 'Copied!');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showTemporaryMessage(this, 'Copied!');
+            }
+        });
+    });
+    
+    // Form input focus effects
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+        
+        // Real-time validation
+        input.addEventListener('input', function() {
+            validateInput(this);
+        });
+    });
+}
+
+// Show temporary message
+function showTemporaryMessage(element, message) {
+    const originalText = element.querySelector('p').textContent;
+    const textElement = element.querySelector('p');
+    
+    textElement.textContent = message;
+    textElement.style.color = 'var(--primary-cyan)';
+    
+    setTimeout(() => {
+        textElement.textContent = originalText;
+        textElement.style.color = '';
+    }, 1500);
+}
+
+// Real-time input validation
+function validateInput(input) {
+    const value = input.value.trim();
+    
+    // Remove existing validation classes
+    input.classList.remove('valid', 'invalid');
+    
+    if (value === '') {
+        return; // Don't validate empty fields
+    }
+    
+    let isValid = true;
+    
+    switch (input.type) {
+        case 'email':
+            isValid = isValidEmail(value);
+            break;
+        case 'text':
+            isValid = value.length >= 2;
+            break;
+        default:
+            if (input.tagName === 'TEXTAREA') {
+                isValid = value.length >= 10;
+            }
+    }
+    
+    input.classList.add(isValid ? 'valid' : 'invalid');
+}
+
+// Social links functionality
+function initSocialLinks() {
+    const socialLinks = document.querySelectorAll('.contact-social-link');
+    
+    socialLinks.forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.1)';
+        });
+        
+        link.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+}
+
+// Initialize social links
+initSocialLinks();
+
+// Character counter for textarea
+function initCharacterCounter() {
+    const textarea = document.querySelector('#message');
+    
+    if (textarea) {
+        const maxLength = 500;
+        
+        // Create counter element
+        const counter = document.createElement('div');
+        counter.className = 'character-counter';
+        counter.style.cssText = `
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        `;
+        
+        textarea.parentElement.appendChild(counter);
+        
+        // Update counter
+        function updateCounter() {
+            const length = textarea.value.length;
+            counter.textContent = `${length}/${maxLength}`;
+            
+            if (length > maxLength * 0.9) {
+                counter.style.color = 'var(--primary-cyan)';
+            } else {
+                counter.style.color = 'var(--text-muted)';
+            }
+        }
+        
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial call
+    }
+}
+
+// Initialize character counter
+initCharacterCounter();

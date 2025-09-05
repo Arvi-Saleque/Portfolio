@@ -119,6 +119,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="css\about.css" />
+    <Content Include="css\achievements.css" />
     <Content Include="css\contact.css" />
     <Content Include="css\education.css" />
     <Content Include="css\hero.css" />
@@ -130,6 +131,7 @@
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="js\about.js" />
+    <Content Include="js\achievements.js" />
     <Content Include="js\contact.js" />
     <Content Include="js\education.js" />
     <Content Include="js\hero.js" />

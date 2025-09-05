@@ -1,18 +1,73 @@
-// Main JavaScript - Core functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all components
+    // Debug: Check if navigation exists
+    console.log('Portfolio Navigation Debug:');
+    const sideNav = document.querySelector('.side-nav');
+    const navMenu = document.querySelector('.nav-menu');
+    console.log('Side navigation found:', !!sideNav);
+    console.log('Nav menu found:', !!navMenu);
+    
+    if (sideNav) {
+        console.log('Side nav display:', window.getComputedStyle(sideNav).display);
+        console.log('Side nav visibility:', window.getComputedStyle(sideNav).visibility);
+        console.log('Side nav opacity:', window.getComputedStyle(sideNav).opacity);
+        console.log('Side nav transform:', window.getComputedStyle(sideNav).transform);
+        
+        // Force show navigation
+        sideNav.style.display = 'flex';
+        sideNav.style.visibility = 'visible';
+        sideNav.style.opacity = '1';
+        sideNav.style.transform = 'translateX(0)';
+        sideNav.style.position = 'fixed';
+        sideNav.style.left = '0';
+        sideNav.style.top = '0';
+        sideNav.style.zIndex = '2000';
+        
+        console.log('Navigation forced to be visible');
+    }
+    
+    // Initialize core components
     initNavigation();
-    initScrollAnimations();
     initSmoothScrolling();
     initMobileMenu();
+    initResponsiveLayout();
 });
 
-// Navigation functionality
+// Force navigation visibility function
+function forceNavigationVisibility() {
+    const sideNav = document.querySelector('.side-nav');
+    if (sideNav) {
+        sideNav.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 250px !important;
+            height: 100vh !important;
+            background: #111111 !important;
+            border-right: 2px solid #333333 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 2rem 0 !important;
+            z-index: 2000 !important;
+            transform: translateX(0) !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        `;
+        console.log('Navigation CSS forced');
+    }
+}
+
+// Call force navigation on load
+window.addEventListener('load', forceNavigationVisibility);
+
+// Navigation functionality (simplified - no scroll animations)
 function initNavigation() {
     const navLinks = document.querySelectorAll('.nav-menu a');
     const sections = document.querySelectorAll('section');
     
-    // Add active class to current section
+    console.log('Navigation links found:', navLinks.length);
+    console.log('Sections found:', sections.length);
+    
+    // Add active class to current section (without scroll effects)
     function updateActiveNav() {
         let current = '';
         sections.forEach(section => {
@@ -31,14 +86,14 @@ function initNavigation() {
         });
     }
     
-    // Listen for scroll events
+    // Listen for scroll events (no animations)
     window.addEventListener('scroll', updateActiveNav);
     
     // Initial call
     updateActiveNav();
 }
 
-// Smooth scrolling for navigation links
+// Basic smooth scrolling for navigation links (no fancy effects)
 function initSmoothScrolling() {
     const navLinks = document.querySelectorAll('a[href^="#"]');
     
@@ -50,6 +105,10 @@ function initSmoothScrolling() {
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
+                // Close mobile menu if open
+                closeMobileMenu();
+                
+                // Simple scroll to section
                 targetSection.scrollIntoView({
                     behavior: 'smooth'
                 });
@@ -58,83 +117,52 @@ function initSmoothScrolling() {
     });
 }
 
-// Scroll to section function for buttons
+// Scroll to section function for buttons (basic functionality)
 function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
+        // Close mobile menu if open
+        closeMobileMenu();
+        
         section.scrollIntoView({
             behavior: 'smooth'
         });
     }
 }
 
-// Scroll animations
-function initScrollAnimations() {
-    const animateElements = document.querySelectorAll('.animate-on-scroll');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animated');
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
-    
-    animateElements.forEach(element => {
-        observer.observe(element);
-    });
-}
-
-// Mobile menu functionality
+// Mobile menu functionality (improved for better visibility)
 function initMobileMenu() {
-    // Create mobile menu toggle button
+    // Create mobile menu toggle button with hamburger
     const menuToggle = document.createElement('button');
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
     menuToggle.className = 'mobile-menu-toggle';
-    menuToggle.style.cssText = `
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        z-index: 2000;
-        background: var(--accent-bg);
-        color: var(--primary-cyan);
-        border: 2px solid var(--primary-cyan);
-        border-radius: 8px;
-        padding: 0.5rem;
-        font-size: 1.2rem;
-        cursor: pointer;
-        display: none;
-        transition: all 0.3s ease;
+    menuToggle.innerHTML = `
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     `;
     
-    // Add hover effect
-    menuToggle.addEventListener('mouseenter', function() {
-        this.style.background = 'var(--primary-cyan)';
-        this.style.color = 'var(--primary-bg)';
-    });
-    
-    menuToggle.addEventListener('mouseleave', function() {
-        this.style.background = 'var(--accent-bg)';
-        this.style.color = 'var(--primary-cyan)';
-    });
+    // Create overlay for mobile menu
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-overlay';
     
     document.body.appendChild(menuToggle);
+    document.body.appendChild(overlay);
     
     const sideNav = document.querySelector('.side-nav');
+    const hamburger = menuToggle.querySelector('.hamburger');
     
     // Toggle mobile menu
-    menuToggle.addEventListener('click', function() {
-        sideNav.classList.toggle('active');
-        const icon = this.querySelector('i');
-        
-        if (sideNav.classList.contains('active')) {
-            icon.className = 'fas fa-times';
-        } else {
-            icon.className = 'fas fa-bars';
-        }
+    menuToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMobileMenu();
+    });
+    
+    // Close menu when clicking overlay
+    overlay.addEventListener('click', function() {
+        closeMobileMenu();
     });
     
     // Close menu when clicking on nav links (mobile)
@@ -142,47 +170,140 @@ function initMobileMenu() {
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             if (window.innerWidth <= 768) {
-                sideNav.classList.remove('active');
-                menuToggle.querySelector('i').className = 'fas fa-bars';
+                setTimeout(() => {
+                    closeMobileMenu();
+                }, 300); // Small delay for smooth transition
             }
         });
     });
     
-    // Show/hide mobile menu toggle based on screen size
-    function checkScreenSize() {
-        if (window.innerWidth <= 768) {
-            menuToggle.style.display = 'block';
+    // Function to toggle mobile menu
+    function toggleMobileMenu() {
+        const isActive = sideNav.classList.contains('active');
+        
+        if (isActive) {
+            closeMobileMenu();
         } else {
-            menuToggle.style.display = 'none';
-            sideNav.classList.remove('active');
+            openMobileMenu();
         }
     }
     
-    window.addEventListener('resize', checkScreenSize);
-    checkScreenSize();
-}
-
-// Utility function to add CSS to mobile menu
-function addMobileMenuStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        @media (max-width: 768px) {
-            .mobile-menu-toggle {
-                display: block !important;
+    // Function to open mobile menu
+    function openMobileMenu() {
+        sideNav.classList.add('active');
+        overlay.classList.add('active');
+        hamburger.classList.add('active');
+        menuToggle.classList.add('active');
+        document.body.classList.add('menu-open'); // Add class to prevent body scroll
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        
+        // Ensure menu is properly positioned
+        sideNav.style.transform = 'translateX(0)';
+        sideNav.style.visibility = 'visible';
+    }
+    
+    // Function to close mobile menu
+    window.closeMobileMenu = function() {
+        if (!sideNav) return;
+        
+        sideNav.classList.remove('active');
+        overlay.classList.remove('active');
+        hamburger.classList.remove('active');
+        menuToggle.classList.remove('active');
+        document.body.classList.remove('menu-open'); // Remove class
+        document.body.style.overflow = 'auto'; // Restore scrolling
+        
+        // Only hide on mobile
+        if (window.innerWidth <= 768) {
+            sideNav.style.transform = 'translateX(-100%)';
+        } else {
+            sideNav.style.transform = 'translateX(0)';
+        }
+    }
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sideNav && sideNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            closeMobileMenu();
+            // Reset side nav for desktop
+            if (sideNav) {
+                sideNav.style.transform = 'translateX(0)';
+                sideNav.style.visibility = 'visible';
+                sideNav.style.display = 'flex';
             }
-            
-            .side-nav.active {
-                transform: translateX(0) !important;
+        } else {
+            // Initialize proper state for mobile
+            if (sideNav && !sideNav.classList.contains('active')) {
+                sideNav.style.transform = 'translateX(-100%)';
             }
         }
-    `;
-    document.head.appendChild(style);
+    });
+    
+    // Initialize proper state based on screen size
+    if (window.innerWidth <= 768) {
+        if (sideNav && !sideNav.classList.contains('active')) {
+            sideNav.style.transform = 'translateX(-100%)';
+        }
+    } else {
+        if (sideNav) {
+            sideNav.style.transform = 'translateX(0)';
+            sideNav.style.visibility = 'visible';
+            sideNav.style.display = 'flex';
+        }
+    }
 }
 
-// Initialize mobile menu styles
-addMobileMenuStyles();
+// Responsive layout adjustments (improved)
+function initResponsiveLayout() {
+    function adjustLayout() {
+        const screenWidth = window.innerWidth;
+        const mainContent = document.querySelector('.main-content');
+        const sideNav = document.querySelector('.side-nav');
+        
+        console.log('Adjusting layout for screen width:', screenWidth);
+        
+        // Adjust main content margin based on screen size
+        if (screenWidth <= 768) {
+            if (mainContent) mainContent.style.marginLeft = '0';
+            // Ensure mobile menu is properly positioned
+            if (sideNav && !sideNav.classList.contains('active')) {
+                sideNav.style.transform = 'translateX(-100%)';
+            }
+        } else {
+            if (mainContent) mainContent.style.marginLeft = '250px'; // Use fixed value instead of CSS variable
+            // Force show side nav for desktop
+            if (sideNav) {
+                sideNav.style.transform = 'translateX(0)';
+                sideNav.style.visibility = 'visible';
+                sideNav.style.display = 'flex';
+                sideNav.classList.remove('active');
+            }
+            // Close mobile menu if it's open
+            if (typeof closeMobileMenu === 'function') {
+                closeMobileMenu();
+            }
+        }
+    }
+    
+    // Initial adjustment
+    adjustLayout();
+    
+    // Adjust on resize with debouncing
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(adjustLayout, 100);
+    });
+}
 
-// Scroll to top functionality
+// Simple scroll to top functionality (basic, no animations)
 function scrollToTop() {
     window.scrollTo({
         top: 0,
@@ -190,7 +311,7 @@ function scrollToTop() {
     });
 }
 
-// Add scroll to top button
+// Basic scroll to top button (no fancy effects)
 function createScrollToTopButton() {
     const button = document.createElement('button');
     button.innerHTML = '<i class="fas fa-arrow-up"></i>';
@@ -210,13 +331,13 @@ function createScrollToTopButton() {
         z-index: 1000;
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s ease;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
         box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
     `;
     
     button.addEventListener('click', scrollToTop);
     
-    // Show/hide based on scroll position
+    // Simple show/hide based on scroll position (no complex animations)
     window.addEventListener('scroll', function() {
         if (window.scrollY > 500) {
             button.style.opacity = '1';
@@ -227,16 +348,32 @@ function createScrollToTopButton() {
         }
     });
     
-    // Hover effect
+    // Simple hover effect
     button.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-3px) scale(1.05)';
-        this.style.boxShadow = '0 10px 25px rgba(0, 255, 255, 0.4)';
+        this.style.transform = 'scale(1.05)';
     });
     
     button.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-        this.style.boxShadow = '0 5px 15px rgba(0, 255, 255, 0.3)';
+        this.style.transform = 'scale(1)';
     });
+    
+    // Adjust position for mobile
+    function adjustScrollButtonPosition() {
+        if (window.innerWidth <= 768) {
+            button.style.bottom = '1rem';
+            button.style.right = '1rem';
+            button.style.width = '45px';
+            button.style.height = '45px';
+        } else {
+            button.style.bottom = '2rem';
+            button.style.right = '2rem';
+            button.style.width = '50px';
+            button.style.height = '50px';
+        }
+    }
+    
+    window.addEventListener('resize', adjustScrollButtonPosition);
+    adjustScrollButtonPosition();
     
     document.body.appendChild(button);
 }
@@ -244,44 +381,119 @@ function createScrollToTopButton() {
 // Initialize scroll to top button
 createScrollToTopButton();
 
-// Loading animation
-function initLoadingAnimation() {
+// Basic loading function (no animations)
+function initBasicLoading() {
     window.addEventListener('load', function() {
         document.body.style.overflow = 'auto';
         
-        // Animate elements on page load
+        // Force navigation visibility again on load
+        forceNavigationVisibility();
+        
+        // Simple element reveal on page load (no fancy animations)
         const heroElements = document.querySelectorAll('.hero-text, .hero-image');
-        heroElements.forEach((element, index) => {
-            setTimeout(() => {
+        heroElements.forEach((element) => {
+            if (element) {
                 element.style.opacity = '1';
                 element.style.transform = 'translateY(0)';
-            }, index * 200);
+            }
         });
     });
 }
 
-// Initialize loading animation
-initLoadingAnimation();
+// Initialize basic loading
+initBasicLoading();
 
 // Global error handling
 window.addEventListener('error', function(e) {
     console.error('JavaScript error:', e.error);
 });
 
-// Performance optimization - debounce scroll events
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+// Responsive text sizing for better mobile experience (no scroll effects)
+function initResponsiveText() {
+    const sectionTitles = document.querySelectorAll('.section-title');
+    
+    function adjustTextSizes() {
+        const screenWidth = window.innerWidth;
+        
+        sectionTitles.forEach(title => {
+            if (screenWidth <= 480) {
+                title.style.fontSize = '1.8rem';
+            } else if (screenWidth <= 768) {
+                title.style.fontSize = '2.2rem';
+            } else if (screenWidth <= 1024) {
+                title.style.fontSize = '2.5rem';
+            } else {
+                title.style.fontSize = '3rem';
+            }
+        });
+    }
+    
+    window.addEventListener('resize', adjustTextSizes);
+    adjustTextSizes();
 }
 
-// Apply debouncing to scroll events
-const debouncedScrollHandler = debounce(function() {
-    // Any scroll-heavy operations can go here
-}, 10);
+// Initialize responsive text
+initResponsiveText();
+
+// Touch handling for mobile devices (enhanced for menu)
+function initTouchHandling() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', function(e) {
+        const touchEndX = e.touches[0].clientX;
+        const touchEndY = e.touches[0].clientY;
+        const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
+        
+        // Close mobile menu on swipe left (only if horizontal swipe is dominant)
+        if (Math.abs(diffX) > Math.abs(diffY) && diffX > 50) {
+            const sideNav = document.querySelector('.side-nav');
+            if (sideNav && sideNav.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }
+    }, { passive: true });
+}
+
+// Initialize touch handling
+initTouchHandling();
+
+// Additional mobile menu fixes
+function initMobileMenuFixes() {
+    const sideNav = document.querySelector('.side-nav');
+    
+    if (!sideNav) return;
+    
+    // Ensure menu height is properly set
+    function setMenuHeight() {
+        sideNav.style.height = '100vh';
+        sideNav.style.maxHeight = '100vh';
+        
+        if (window.innerWidth > 768) {
+            // Force show on desktop
+            sideNav.style.transform = 'translateX(0)';
+            sideNav.style.visibility = 'visible';
+            sideNav.style.display = 'flex';
+        }
+    }
+    
+    // Initial setup
+    setMenuHeight();
+    
+    // Update on resize
+    window.addEventListener('resize', setMenuHeight);
+    
+    // Prevent scrolling issues
+    window.addEventListener('orientationchange', function() {
+        setTimeout(setMenuHeight, 100);
+    });
+}
+
+// Initialize mobile menu fixes
+initMobileMenuFixes();

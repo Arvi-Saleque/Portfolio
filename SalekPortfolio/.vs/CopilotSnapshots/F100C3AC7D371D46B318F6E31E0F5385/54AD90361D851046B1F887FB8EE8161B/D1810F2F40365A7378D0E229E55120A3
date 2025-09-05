@@ -1,0 +1,362 @@
+﻿// Achievements Section JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initAchievementAnimations();
+    initAchievementInteractions();
+    initNumberCounters();
+});
+
+// Initialize achievement animations
+function initAchievementAnimations() {
+    const achievementItems = document.querySelectorAll('.achievement-item');
+    
+    achievementItems.forEach((item, index) => {
+        // Add staggered entrance effect
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            item.style.transition = 'all 0.6s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+}
+
+// Initialize achievement interactions
+function initAchievementInteractions() {
+    const achievementItems = document.querySelectorAll('.achievement-item');
+    
+    achievementItems.forEach((item, index) => {
+        // Add click effect
+        item.addEventListener('click', function() {
+            // Create ripple effect
+            createRippleEffect(this, index);
+            
+            // Add temporary highlight
+            this.style.transform = 'translateY(-10px) scale(1.05)';
+            
+            setTimeout(() => {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            }, 200);
+        });
+        
+        // Enhanced hover effects
+        item.addEventListener('mouseenter', function() {
+            // Add particle effect
+            if (index === 0) createParticleEffect(this, '#00ffff');
+            if (index === 1) createParticleEffect(this, '#ffd700');
+            if (index === 2) createParticleEffect(this, '#ff6b35');
+            if (index === 3) createParticleEffect(this, '#8a2be2');
+        });
+    });
+}
+
+// Create ripple effect on click
+function createRippleEffect(element, index) {
+    const ripple = document.createElement('div');
+    const colors = ['#00ffff', '#ffd700', '#ff6b35', '#8a2be2'];
+    
+    ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: ${colors[index]};
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        opacity: 0.6;
+        pointer-events: none;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin-left: -10px;
+        margin-top: -10px;
+        z-index: 1000;
+    `;
+    
+    element.style.position = 'relative';
+    element.appendChild(ripple);
+    
+    // Add ripple animation
+    const style = document.createElement('style');
+    if (!document.getElementById('ripple-animation')) {
+        style.id = 'ripple-animation';
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    setTimeout(() => {
+        ripple.remove();
+    }, 600);
+}
+
+// Create particle effect on hover
+function createParticleEffect(element, color) {
+    const particles = [];
+    const particleCount = 6;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: ${color};
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.8;
+        `;
+        
+        // Random position around the element
+        const rect = element.getBoundingClientRect();
+        const x = Math.random() * rect.width;
+        const y = Math.random() * rect.height;
+        
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        
+        element.style.position = 'relative';
+        element.appendChild(particle);
+        
+        // Animate particle
+        const angle = (Math.PI * 2 * i) / particleCount;
+        const velocity = 30;
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+        
+        let startTime = null;
+        function animateParticle(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            
+            if (elapsed < 1000) {
+                const progress = elapsed / 1000;
+                const currentX = x + vx * progress;
+                const currentY = y + vy * progress;
+                
+                particle.style.left = currentX + 'px';
+                particle.style.top = currentY + 'px';
+                particle.style.opacity = 0.8 * (1 - progress);
+                
+                requestAnimationFrame(animateParticle);
+            } else {
+                particle.remove();
+            }
+        }
+        
+        requestAnimationFrame(animateParticle);
+    }
+}
+
+// Initialize number counters for achievement numbers
+function initNumberCounters() {
+    const numbers = document.querySelectorAll('.achievement-number');
+    
+    numbers.forEach((number, index) => {
+        const text = number.textContent;
+        
+        // Extract numeric value for animation
+        let targetValue = 0;
+        let suffix = '';
+        
+        if (text.includes('+')) {
+            const parts = text.split('+');
+            targetValue = parseInt(parts[0]);
+            suffix = '+';
+        } else if (text === 'Expert') {
+            // Skip animation for text values
+            return;
+        } else {
+            targetValue = parseInt(text);
+        }
+        
+        if (targetValue > 0) {
+            animateNumber(number, targetValue, suffix, index);
+        }
+    });
+}
+
+// Animate number counting
+function animateNumber(element, target, suffix, index) {
+    let current = 0;
+    const duration = 2000; // 2 seconds
+    const startTime = performance.now();
+    
+    function updateNumber(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+        current = Math.floor(target * easeOutCubic);
+        
+        element.textContent = current + suffix;
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateNumber);
+        } else {
+            element.textContent = target + suffix;
+        }
+    }
+    
+    // Start animation with delay based on index
+    setTimeout(() => {
+        element.textContent = '0' + suffix;
+        requestAnimationFrame(updateNumber);
+    }, index * 300);
+}
+
+// Achievement milestone checker
+function checkAchievementMilestones() {
+    const achievements = [
+        { element: document.querySelectorAll('.achievement-item')[0], milestone: 2000 },
+        { element: document.querySelectorAll('.achievement-item')[1], milestone: 'Expert' },
+        { element: document.querySelectorAll('.achievement-item')[2], milestone: 1900 },
+        { element: document.querySelectorAll('.achievement-item')[3], milestone: 2024 }
+    ];
+    
+    achievements.forEach(achievement => {
+        if (achievement.element) {
+            achievement.element.classList.add('milestone');
+            
+            // Add achievement badge
+            const badge = document.createElement('div');
+            badge.className = 'achievement-badge';
+            badge.innerHTML = '✓';
+            achievement.element.appendChild(badge);
+        }
+    });
+}
+
+// Initialize milestone checker
+checkAchievementMilestones();
+
+// Scroll-triggered animations (basic implementation)
+function initScrollTrigger() {
+    const achievementsSection = document.querySelector('.achievements-section');
+    
+    if (!achievementsSection) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Re-trigger animations when section comes into view
+                initAchievementAnimations();
+                initNumberCounters();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.3
+    });
+    
+    observer.observe(achievementsSection);
+}
+
+// Initialize scroll trigger
+initScrollTrigger();
+
+// Achievement sharing functionality
+function initAchievementSharing() {
+    const achievementItems = document.querySelectorAll('.achievement-item');
+    
+    achievementItems.forEach((item, index) => {
+        const shareButton = document.createElement('button');
+        shareButton.className = 'achievement-share';
+        shareButton.innerHTML = '<i class="fas fa-share-alt"></i>';
+        shareButton.style.cssText = `
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--primary-cyan);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-cyan);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+        `;
+        
+        item.appendChild(shareButton);
+        
+        item.addEventListener('mouseenter', () => {
+            shareButton.style.opacity = '1';
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            shareButton.style.opacity = '0';
+        });
+        
+        shareButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            shareAchievement(index);
+        });
+    });
+}
+
+// Share achievement function
+function shareAchievement(index) {
+    const achievements = [
+        'Solved 2000+ coding problems! 💻',
+        'Achieved Expert level on Codeforces! ⭐',
+        'Reached 1900+ rating on CodeChef! 🏅',
+        'Participated in ICPC Regional 2024! 🏆'
+    ];
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Coding Achievement',
+            text: achievements[index],
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(achievements[index] + ' ' + window.location.href)
+            .then(() => {
+                // Show temporary success message
+                showTemporaryMessage('Achievement copied to clipboard!');
+            });
+    }
+}
+
+// Show temporary message
+function showTemporaryMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: var(--primary-cyan);
+        color: var(--primary-bg);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Initialize sharing functionality
+initAchievementSharing();

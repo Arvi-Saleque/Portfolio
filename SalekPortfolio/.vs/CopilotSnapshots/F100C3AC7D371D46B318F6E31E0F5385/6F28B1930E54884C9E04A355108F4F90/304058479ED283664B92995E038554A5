@@ -1,0 +1,38 @@
+﻿// Education Section JavaScript - No scroll effects
+document.addEventListener('DOMContentLoaded', function() {
+    initEducationInteractions();
+});
+
+// Basic education section interactions
+function initEducationInteractions() {
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    
+    timelineItems.forEach((item, index) => {
+        // Simple hover effects for timeline icons
+        const icon = item.querySelector('.timeline-icon');
+        const content = item.querySelector('.timeline-content');
+        
+        if (icon && content) {
+            icon.addEventListener('mouseenter', function() {
+                content.style.transform = 'translateY(-5px)';
+            });
+            
+            icon.addEventListener('mouseleave', function() {
+                content.style.transform = 'translateY(0)';
+            });
+        }
+    });
+}
+
+// Basic timeline visibility (no scroll effects)
+function initTimelineVisibility() {
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    
+    timelineItems.forEach(item => {
+        item.style.opacity = '1';
+        item.style.transform = 'translateY(0)';
+    });
+}
+
+// Initialize timeline visibility
+initTimelineVisibility();

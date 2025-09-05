@@ -18,13 +18,14 @@
     <link rel="stylesheet" href="css/education.css">
     <link rel="stylesheet" href="css/skills.css">
     <link rel="stylesheet" href="css/portfolio.css">
+    <link rel="stylesheet" href="css/achievements.css">
     <link rel="stylesheet" href="css/contact.css">
 </head>
 <body>
     <!-- Fixed Side Navigation -->
     <nav class="side-nav">
         <div class="nav-logo">
-            <h2>AS</h2>
+            <!-- AS text removed -->
         </div>
         <ul class="nav-menu">
             <li><a href="#hero" data-section="hero"><i class="fas fa-home"></i><span>Home</span></a></li>
@@ -32,6 +33,7 @@
             <li><a href="#education" data-section="education"><i class="fas fa-graduation-cap"></i><span>Education</span></a></li>
             <li><a href="#skills" data-section="skills"><i class="fas fa-code"></i><span>Skills</span></a></li>
             <li><a href="#portfolio" data-section="portfolio"><i class="fas fa-briefcase"></i><span>Portfolio</span></a></li>
+            <li><a href="#achievements" data-section="achievements"><i class="fas fa-trophy"></i><span>Achievements</span></a></li>
             <li><a href="#contact" data-section="contact"><i class="fas fa-envelope"></i><span>Contact</span></a></li>
         </ul>
         <div class="nav-social">
@@ -49,7 +51,7 @@
                 <div class="hero-content">
                     <div class="hero-text">
                         <h1 class="hero-title">
-                            <span class="glitch" data-text="Hi, I'm Arvi Saleque">Hi, I'm Arvi Saleque</span>
+                            <span class="glitch" data-text="Hi, I'm Arvi Saleque">Hi, I'm Arvi <span class="red-text">Saleque</span></span>
                         </h1>
                         <h2 class="hero-subtitle">Full Stack Developer & Problem Solver</h2>
                         <p class="hero-description">
@@ -299,6 +301,104 @@
             </div>
         </section>
 
+        <!-- Achievements Section -->
+        <section id="achievements" class="achievements-section">
+            <div class="container">
+                <h2 class="section-title">Achievements</h2>
+                <div class="achievements-content">
+                    <div class="achievements-grid">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">2000+</div>
+                                <h3>Problems Solved</h3>
+                                <p>Successfully solved over 2000 different problems across various online judges including Codeforces, CodeChef, and LeetCode</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">Expert</div>
+                                <h3>Codeforces Rating</h3>
+                                <p>Achieved Expert level on Codeforces, demonstrating strong algorithmic and competitive programming skills</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">1900+</div>
+                                <h3>CodeChef Rating</h3>
+                                <p>Maintained a consistent rating of 1900+ on CodeChef platform, showcasing problem-solving excellence</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">2024</div>
+                                <h3>ICPC Regional</h3>
+                                <p>Participated in the prestigious International Collegiate Programming Contest (ICPC) Regional competition 2024</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">200+</div>
+                                <h3>CSES Problem Set</h3>
+                                <p>Solved 200+ problems from the competitive programming essentials and standard algorithms on CSES platform</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">200+</div>
+                                <h3>LightOJ Problems</h3>
+                                <p>Completed 200+ algorithmic challenges on LightOJ, focusing on advanced data structures and algorithms</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">Champion</div>
+                                <h3>Khulna Regional</h3>
+                                <p>Won championship at Khulna Regional Programming Contest, demonstrating exceptional competitive programming skills</p>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="achievement-content">
+                                <div class="achievement-number">3</div>
+                                <h3>Mega Projects</h3>
+                                <p>Successfully completed 3 large-scale software projects including e-commerce platform, banking system, and task management system</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Contact Section -->
         <section id="contact" class="contact-section">
             <div class="container">
@@ -376,6 +476,7 @@
     <script src="js/education.js"></script>
     <script src="js/skills.js"></script>
     <script src="js/portfolio.js"></script>
+    <script src="js/achievements.js"></script>
     <script src="js/contact.js"></script>
 </body>
 </html>

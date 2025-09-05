@@ -1,0 +1,264 @@
+﻿// Hero Section JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initHeroAnimations();
+    initGlitchEffect();
+    initTypingEffect();
+});
+
+// Initialize hero animations
+function initHeroAnimations() {
+    const heroText = document.querySelector('.hero-text');
+    const heroImage = document.querySelector('.hero-image');
+    
+    // Add initial styles for animation
+    if (heroText) {
+        heroText.style.opacity = '0';
+        heroText.style.transform = 'translateX(-50px)';
+        heroText.style.transition = 'all 1s ease';
+    }
+    
+    if (heroImage) {
+        heroImage.style.opacity = '0';
+        heroImage.style.transform = 'translateX(50px)';
+        heroImage.style.transition = 'all 1s ease 0.3s';
+    }
+    
+    // Trigger animations on load
+    setTimeout(() => {
+        if (heroText) {
+            heroText.style.opacity = '1';
+            heroText.style.transform = 'translateX(0)';
+        }
+    }, 500);
+    
+    setTimeout(() => {
+        if (heroImage) {
+            heroImage.style.opacity = '1';
+            heroImage.style.transform = 'translateX(0)';
+        }
+    }, 800);
+}
+
+// Enhanced glitch effect - reduced frequency to prevent overlap
+function initGlitchEffect() {
+    const glitchElement = document.querySelector('.glitch');
+    
+    if (!glitchElement) return;
+    
+    // Less frequent glitch trigger to prevent overlap
+    function triggerGlitch() {
+        glitchElement.style.animation = 'none';
+        
+        setTimeout(() => {
+            glitchElement.style.animation = '';
+        }, 100);
+        
+        // Schedule next glitch - increased interval to reduce overlap
+        setTimeout(triggerGlitch, Math.random() * 15000 + 8000); // 8-23 seconds
+    }
+    
+    // Start glitch effect with delay
+    setTimeout(triggerGlitch, 5000);
+}
+
+// Typing effect for subtitle
+function initTypingEffect() {
+    const subtitle = document.querySelector('.hero-subtitle');
+    
+    if (!subtitle) return;
+    
+    const originalText = subtitle.textContent;
+    const typingSpeed = 80; // Slightly faster typing
+    const pauseTime = 1500; // Reduced pause time
+    
+    // Clear text initially
+    subtitle.textContent = '';
+    subtitle.style.borderRight = '2px solid var(--primary-cyan)';
+    
+    setTimeout(() => {
+        typeText(subtitle, originalText, typingSpeed);
+    }, pauseTime);
+}
+
+// Type text character by character
+function typeText(element, text, speed) {
+    let index = 0;
+    
+    function typeCharacter() {
+        if (index < text.length) {
+            element.textContent += text.charAt(index);
+            index++;
+            setTimeout(typeCharacter, speed);
+        } else {
+            // Remove cursor after typing is complete
+            setTimeout(() => {
+                element.style.borderRight = 'none';
+            }, 1000);
+        }
+    }
+    
+    typeCharacter();
+}
+
+// Parallax effect for hero background - optimized
+function initHeroParallax() {
+    const heroSection = document.querySelector('.hero-section');
+    
+    if (!heroSection) return;
+    
+    let ticking = false;
+    
+    function updateParallax() {
+        const scrolled = window.pageYOffset;
+        const parallaxSpeed = 0.2; // Reduced for subtlety
+        
+        heroSection.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+        ticking = false;
+    }
+    
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    });
+}
+
+// Initialize parallax effect
+initHeroParallax();
+
+// Floating animation for profile image - improved
+function initImageFloating() {
+    const profileImg = document.querySelector('.profile-img');
+    
+    if (!profileImg) return;
+    
+    let floatDirection = 1;
+    let currentFloat = 0;
+    const maxFloat = 8; // Reduced floating range
+    
+    function animateFloat() {
+        currentFloat += floatDirection * 0.3; // Slower animation
+        
+        if (currentFloat >= maxFloat) floatDirection = -1;
+        if (currentFloat <= -maxFloat) floatDirection = 1;
+        
+        profileImg.style.transform = `translateY(${currentFloat}px)`;
+        
+        requestAnimationFrame(animateFloat);
+    }
+    
+    animateFloat();
+}
+
+// Initialize image floating
+initImageFloating();
+
+// Hero button interactions
+function initHeroButtonEffects() {
+    const heroBtn = document.querySelector('.hero-btn');
+    
+    if (!heroBtn) return;
+    
+    // Add ripple effect on click
+    heroBtn.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const ripple = document.createElement('div');
+        
+        ripple.style.cssText = `
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            left: ${e.clientX - rect.left}px;
+            top: ${e.clientY - rect.top}px;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            margin-top: -10px;
+            pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+    
+    // Add ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize button effects
+initHeroButtonEffects();
+
+// Responsive text sizing
+function initResponsiveText() {
+    const heroTitle = document.querySelector('.hero-title');
+    const heroSubtitle = document.querySelector('.hero-subtitle');
+    
+    if (!heroTitle || !heroSubtitle) return;
+    
+    function adjustTextSize() {
+        const screenWidth = window.innerWidth;
+        
+        if (screenWidth < 480) {
+            heroTitle.style.fontSize = '2.2rem';
+            heroSubtitle.style.fontSize = '1.2rem';
+        } else if (screenWidth < 768) {
+            heroTitle.style.fontSize = '2.5rem';
+            heroSubtitle.style.fontSize = '1.3rem';
+        } else if (screenWidth < 1024) {
+            heroTitle.style.fontSize = '3rem';
+            heroSubtitle.style.fontSize = '1.4rem';
+        } else {
+            heroTitle.style.fontSize = '3.5rem';
+            heroSubtitle.style.fontSize = '1.6rem';
+        }
+    }
+    
+    window.addEventListener('resize', adjustTextSize);
+    adjustTextSize();
+}
+
+// Initialize responsive text
+initResponsiveText();
+
+// Clean up overlapping elements on resize
+function initOverlapPrevention() {
+    const heroText = document.querySelector('.hero-text');
+    const heroImage = document.querySelector('.hero-image');
+    
+    if (!heroText || !heroImage) return;
+    
+    function preventOverlap() {
+        const screenWidth = window.innerWidth;
+        
+        if (screenWidth < 768) {
+            // Mobile: stack vertically with proper spacing
+            heroText.style.marginBottom = '2rem';
+            heroImage.style.marginTop = '2rem';
+        } else {
+            // Desktop: side by side
+            heroText.style.marginBottom = '0';
+            heroImage.style.marginTop = '0';
+        }
+    }
+    
+    window.addEventListener('resize', preventOverlap);
+    preventOverlap();
+}
+
+// Initialize overlap prevention
+initOverlapPrevention();

@@ -39,26 +39,26 @@ function initHeroAnimations() {
     }, 800);
 }
 
-// Enhanced glitch effect
+// Enhanced glitch effect - reduced frequency to prevent overlap
 function initGlitchEffect() {
     const glitchElement = document.querySelector('.glitch');
     
     if (!glitchElement) return;
     
-    // Random glitch trigger
+    // Less frequent glitch trigger to prevent overlap
     function triggerGlitch() {
         glitchElement.style.animation = 'none';
         
         setTimeout(() => {
             glitchElement.style.animation = '';
-        }, 50);
+        }, 100);
         
-        // Schedule next glitch
-        setTimeout(triggerGlitch, Math.random() * 10000 + 5000);
+        // Schedule next glitch - increased interval to reduce overlap
+        setTimeout(triggerGlitch, Math.random() * 15000 + 8000); // 8-23 seconds
     }
     
-    // Start glitch effect
-    setTimeout(triggerGlitch, 3000);
+    // Start glitch effect with delay
+    setTimeout(triggerGlitch, 5000);
 }
 
 // Typing effect for subtitle
@@ -68,8 +68,8 @@ function initTypingEffect() {
     if (!subtitle) return;
     
     const originalText = subtitle.textContent;
-    const typingSpeed = 100; // milliseconds per character
-    const pauseTime = 2000; // pause before starting
+    const typingSpeed = 80; // Slightly faster typing
+    const pauseTime = 1500; // Reduced pause time
     
     // Clear text initially
     subtitle.textContent = '';
@@ -100,24 +100,34 @@ function typeText(element, text, speed) {
     typeCharacter();
 }
 
-// Parallax effect for hero background
+// Parallax effect for hero background - optimized
 function initHeroParallax() {
     const heroSection = document.querySelector('.hero-section');
     
     if (!heroSection) return;
     
-    window.addEventListener('scroll', () => {
+    let ticking = false;
+    
+    function updateParallax() {
         const scrolled = window.pageYOffset;
-        const parallaxSpeed = 0.5;
+        const parallaxSpeed = 0.2; // Reduced for subtlety
         
         heroSection.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+        ticking = false;
+    }
+    
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
     });
 }
 
 // Initialize parallax effect
 initHeroParallax();
 
-// Floating animation for profile image
+// Floating animation for profile image - improved
 function initImageFloating() {
     const profileImg = document.querySelector('.profile-img');
     
@@ -125,12 +135,13 @@ function initImageFloating() {
     
     let floatDirection = 1;
     let currentFloat = 0;
+    const maxFloat = 8; // Reduced floating range
     
     function animateFloat() {
-        currentFloat += floatDirection * 0.5;
+        currentFloat += floatDirection * 0.3; // Slower animation
         
-        if (currentFloat >= 10) floatDirection = -1;
-        if (currentFloat <= -10) floatDirection = 1;
+        if (currentFloat >= maxFloat) floatDirection = -1;
+        if (currentFloat <= -maxFloat) floatDirection = 1;
         
         profileImg.style.transform = `translateY(${currentFloat}px)`;
         
@@ -192,90 +203,28 @@ function initHeroButtonEffects() {
 // Initialize button effects
 initHeroButtonEffects();
 
-// Cursor trail effect (optional)
-function initCursorTrail() {
-    const heroSection = document.querySelector('.hero-section');
-    
-    if (!heroSection) return;
-    
-    const trail = [];
-    const maxTrailLength = 20;
-    
-    heroSection.addEventListener('mousemove', function(e) {
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // Add new point to trail
-        trail.push({ x, y, life: 1 });
-        
-        // Remove old points
-        if (trail.length > maxTrailLength) {
-            trail.shift();
-        }
-        
-        // Update trail display
-        updateCursorTrail();
-    });
-    
-    function updateCursorTrail() {
-        // Remove existing trail elements
-        const existingTrails = heroSection.querySelectorAll('.cursor-trail');
-        existingTrails.forEach(el => el.remove());
-        
-        // Create new trail elements
-        trail.forEach((point, index) => {
-            const trailElement = document.createElement('div');
-            trailElement.className = 'cursor-trail';
-            trailElement.style.cssText = `
-                position: absolute;
-                width: 4px;
-                height: 4px;
-                background: var(--primary-cyan);
-                border-radius: 50%;
-                pointer-events: none;
-                left: ${point.x}px;
-                top: ${point.y}px;
-                opacity: ${point.life * (index / trail.length)};
-                box-shadow: 0 0 10px var(--primary-cyan);
-                z-index: 1;
-            `;
-            
-            heroSection.appendChild(trailElement);
-            
-            // Fade out the point
-            point.life -= 0.05;
-        });
-        
-        // Remove dead points
-        for (let i = trail.length - 1; i >= 0; i--) {
-            if (trail[i].life <= 0) {
-                trail.splice(i, 1);
-            }
-        }
-    }
-}
-
-// Initialize cursor trail (optional - can be enabled/disabled)
-// initCursorTrail();
-
 // Responsive text sizing
 function initResponsiveText() {
     const heroTitle = document.querySelector('.hero-title');
+    const heroSubtitle = document.querySelector('.hero-subtitle');
     
-    if (!heroTitle) return;
+    if (!heroTitle || !heroSubtitle) return;
     
     function adjustTextSize() {
         const screenWidth = window.innerWidth;
         
         if (screenWidth < 480) {
-            heroTitle.style.fontSize = '2.5rem';
+            heroTitle.style.fontSize = '2.2rem';
+            heroSubtitle.style.fontSize = '1.2rem';
         } else if (screenWidth < 768) {
-            heroTitle.style.fontSize = '3rem';
+            heroTitle.style.fontSize = '2.5rem';
+            heroSubtitle.style.fontSize = '1.3rem';
         } else if (screenWidth < 1024) {
-            heroTitle.style.fontSize = '3.5rem';
+            heroTitle.style.fontSize = '3rem';
+            heroSubtitle.style.fontSize = '1.4rem';
         } else {
-            heroTitle.style.fontSize = '4rem';
+            heroTitle.style.fontSize = '3.5rem';
+            heroSubtitle.style.fontSize = '1.6rem';
         }
     }
     
@@ -285,3 +234,31 @@ function initResponsiveText() {
 
 // Initialize responsive text
 initResponsiveText();
+
+// Clean up overlapping elements on resize
+function initOverlapPrevention() {
+    const heroText = document.querySelector('.hero-text');
+    const heroImage = document.querySelector('.hero-image');
+    
+    if (!heroText || !heroImage) return;
+    
+    function preventOverlap() {
+        const screenWidth = window.innerWidth;
+        
+        if (screenWidth < 768) {
+            // Mobile: stack vertically with proper spacing
+            heroText.style.marginBottom = '2rem';
+            heroImage.style.marginTop = '2rem';
+        } else {
+            // Desktop: side by side
+            heroText.style.marginBottom = '0';
+            heroImage.style.marginTop = '0';
+        }
+    }
+    
+    window.addEventListener('resize', preventOverlap);
+    preventOverlap();
+}
+
+// Initialize overlap prevention
+initOverlapPrevention();

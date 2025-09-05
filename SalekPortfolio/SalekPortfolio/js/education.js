@@ -1,337 +1,38 @@
-// Education Section JavaScript
+// Education Section JavaScript - No scroll effects
 document.addEventListener('DOMContentLoaded', function() {
-    initEducationAnimations();
-    initTimelineEffects();
-    initEducationScrollEffects();
+    initEducationInteractions();
 });
 
-// Initialize education section animations
-function initEducationAnimations() {
-    const educationSection = document.querySelector('.education-section');
-    
-    if (!educationSection) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateTimelineItems();
-                observer.unobserve(entry.target); // Run animation only once
-            }
-        });
-    }, {
-        threshold: 0.2
-    });
-    
-    observer.observe(educationSection);
-}
-
-// Animate timeline items
-function animateTimelineItems() {
+// Basic education section interactions
+function initEducationInteractions() {
     const timelineItems = document.querySelectorAll('.timeline-item');
     
     timelineItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.classList.add('animate');
+        // Simple hover effects for timeline icons
+        const icon = item.querySelector('.timeline-icon');
+        const content = item.querySelector('.timeline-content');
+        
+        if (icon && content) {
+            icon.addEventListener('mouseenter', function() {
+                content.style.transform = 'translateY(-5px)';
+            });
             
-            // Add icon animation
-            const icon = item.querySelector('.timeline-icon');
-            if (icon) {
-                setTimeout(() => {
-                    icon.style.animation = 'pulse 1s ease';
-                }, 300);
-            }
-        }, index * 200); // Stagger animation
+            icon.addEventListener('mouseleave', function() {
+                content.style.transform = 'translateY(0)';
+            });
+        }
     });
 }
 
-// Timeline interaction effects
-function initTimelineEffects() {
+// Basic timeline visibility (no scroll effects)
+function initTimelineVisibility() {
     const timelineItems = document.querySelectorAll('.timeline-item');
     
     timelineItems.forEach(item => {
-        const content = item.querySelector('.timeline-content');
-        const icon = item.querySelector('.timeline-icon');
-        
-        // Hover effects
-        item.addEventListener('mouseenter', function() {
-            if (icon) {
-                icon.style.transform = 'translateX(-50%) scale(1.2)';
-                icon.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.8)';
-            }
-            
-            if (content) {
-                content.style.transform = 'translateY(-10px)';
-                content.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.4)';
-            }
-        });
-        
-        item.addEventListener('mouseleave', function() {
-            if (icon) {
-                icon.style.transform = 'translateX(-50%) scale(1)';
-                icon.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.5)';
-            }
-            
-            if (content) {
-                content.style.transform = 'translateY(0)';
-                content.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)';
-            }
-        });
+        item.style.opacity = '1';
+        item.style.transform = 'translateY(0)';
     });
 }
 
-// Scroll-based timeline progression
-function initEducationScrollEffects() {
-    const timeline = document.querySelector('.timeline');
-    const timelineLine = document.querySelector('.timeline::before');
-    
-    if (!timeline) return;
-    
-    window.addEventListener('scroll', () => {
-        updateTimelineProgress();
-    });
-}
-
-// Update timeline progress based on scroll
-function updateTimelineProgress() {
-    const timeline = document.querySelector('.timeline');
-    const educationSection = document.querySelector('.education-section');
-    
-    if (!timeline || !educationSection) return;
-    
-    const rect = educationSection.getBoundingClientRect();
-    const sectionHeight = educationSection.offsetHeight;
-    const windowHeight = window.innerHeight;
-    
-    // Calculate scroll progress through the section
-    let progress = 0;
-    
-    if (rect.top <= windowHeight && rect.bottom >= 0) {
-        if (rect.top <= 0) {
-            progress = Math.min(1, Math.abs(rect.top) / (sectionHeight - windowHeight));
-        } else {
-            progress = 0;
-        }
-    }
-    
-    // Update timeline line progress
-    updateTimelineLine(progress);
-}
-
-// Update the visual progress of timeline line
-function updateTimelineLine(progress) {
-    const style = document.createElement('style');
-    const existingStyle = document.getElementById('timeline-progress-style');
-    
-    if (existingStyle) {
-        existingStyle.remove();
-    }
-    
-    style.id = 'timeline-progress-style';
-    style.textContent = `
-        .timeline::before {
-            background: linear-gradient(
-                to bottom,
-                var(--primary-cyan) 0%,
-                var(--primary-cyan) ${progress * 100}%,
-                rgba(0, 255, 255, 0.3) ${progress * 100}%,
-                rgba(0, 255, 255, 0.3) 100%
-            ) !important;
-        }
-    `;
-    
-    document.head.appendChild(style);
-}
-
-// Timeline content expansion
-function initContentExpansion() {
-    const timelineContents = document.querySelectorAll('.timeline-content');
-    
-    timelineContents.forEach(content => {
-        const description = content.querySelector('p');
-        
-        if (!description) return;
-        
-        const fullText = description.textContent;
-        const truncatedText = fullText.length > 100 ? 
-            fullText.substring(0, 100) + '...' : fullText;
-        
-        if (fullText.length > 100) {
-            description.textContent = truncatedText;
-            
-            // Add expand button
-            const expandBtn = document.createElement('button');
-            expandBtn.textContent = 'Read More';
-            expandBtn.className = 'expand-btn';
-            expandBtn.style.cssText = `
-                background: linear-gradient(45deg, var(--primary-cyan), var(--neon-blue));
-                color: var(--primary-bg);
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 15px;
-                font-size: 0.8rem;
-                font-weight: 600;
-                cursor: pointer;
-                margin-top: 1rem;
-                transition: all 0.3s ease;
-            `;
-            
-            content.appendChild(expandBtn);
-            
-            let isExpanded = false;
-            
-            expandBtn.addEventListener('click', function() {
-                if (!isExpanded) {
-                    description.textContent = fullText;
-                    this.textContent = 'Read Less';
-                    isExpanded = true;
-                } else {
-                    description.textContent = truncatedText;
-                    this.textContent = 'Read More';
-                    isExpanded = false;
-                }
-                
-                // Animate the change
-                content.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    content.style.transform = 'scale(1)';
-                }, 150);
-            });
-            
-            expandBtn.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-                this.style.boxShadow = '0 5px 15px rgba(0, 255, 255, 0.3)';
-            });
-            
-            expandBtn.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-            });
-        }
-    });
-}
-
-// Initialize content expansion
-initContentExpansion();
-
-// Timeline item counter
-function initTimelineCounter() {
-    const timelineItems = document.querySelectorAll('.timeline-item');
-    
-    timelineItems.forEach((item, index) => {
-        const counter = document.createElement('div');
-        counter.className = 'timeline-counter';
-        counter.textContent = String(index + 1).padStart(2, '0');
-        counter.style.cssText = `
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-bg);
-            color: var(--primary-cyan);
-            padding: 0.3rem 0.6rem;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            border: 1px solid var(--primary-cyan);
-            z-index: 3;
-        `;
-        
-        const icon = item.querySelector('.timeline-icon');
-        if (icon) {
-            icon.appendChild(counter);
-        }
-    });
-}
-
-// Initialize timeline counter
-initTimelineCounter();
-
-// Parallax effect for education background
-function initEducationParallax() {
-    const educationSection = document.querySelector('.education-section');
-    
-    if (!educationSection) return;
-    
-    window.addEventListener('scroll', () => {
-        const rect = educationSection.getBoundingClientRect();
-        const scrolled = window.pageYOffset;
-        
-        if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-            const parallaxSpeed = 0.1;
-            const yPos = scrolled * parallaxSpeed;
-            
-            // Create subtle background movement
-            educationSection.style.backgroundPosition = `center ${yPos}px`;
-        }
-    });
-}
-
-// Initialize education parallax
-initEducationParallax();
-
-// Responsive timeline adjustments
-function initResponsiveTimeline() {
-    const timeline = document.querySelector('.timeline');
-    
-    if (!timeline) return;
-    
-    function adjustTimelineLayout() {
-        const screenWidth = window.innerWidth;
-        const timelineItems = document.querySelectorAll('.timeline-item');
-        
-        timelineItems.forEach((item, index) => {
-            const content = item.querySelector('.timeline-content');
-            
-            if (screenWidth <= 768) {
-                // Mobile layout - all items to the right
-                if (content) {
-                    content.style.marginLeft = '80px';
-                    content.style.marginRight = '0';
-                    content.style.textAlign = 'left';
-                    content.style.paddingLeft = '2rem';
-                    content.style.paddingRight = '2rem';
-                }
-            } else {
-                // Desktop layout - alternating sides
-                if (content) {
-                    if (index % 2 === 0) {
-                        // Odd items (left side)
-                        content.style.marginLeft = '0';
-                        content.style.marginRight = '50%';
-                        content.style.textAlign = 'right';
-                        content.style.paddingRight = '3rem';
-                        content.style.paddingLeft = '2.5rem';
-                    } else {
-                        // Even items (right side)
-                        content.style.marginLeft = '50%';
-                        content.style.marginRight = '0';
-                        content.style.textAlign = 'left';
-                        content.style.paddingLeft = '3rem';
-                        content.style.paddingRight = '2.5rem';
-                    }
-                }
-            }
-        });
-    }
-    
-    window.addEventListener('resize', adjustTimelineLayout);
-    adjustTimelineLayout();
-}
-
-// Initialize responsive timeline
-initResponsiveTimeline();
-
-// Performance optimization
-let educationTicking = false;
-
-function optimizedEducationScroll() {
-    if (!educationTicking) {
-        requestAnimationFrame(() => {
-            updateTimelineProgress();
-            educationTicking = false;
-        });
-        educationTicking = true;
-    }
-}
-
-window.addEventListener('scroll', optimizedEducationScroll);
+// Initialize timeline visibility
+initTimelineVisibility();
